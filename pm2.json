@@ -1,0 +1,10 @@
+{
+  "apps": [
+    {
+      "name": "agro_back",
+      "script": "npm",
+      "args" : "start",
+      "watch": true
+    }
+  ]
+}

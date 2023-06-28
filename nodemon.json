@@ -1,0 +1,8 @@
+{
+  "watch": ["./"],
+  "events": {
+    "restart": "kill-port 8082",
+    "crash": "sh -c 'lsof -i :${PORT:-8082} -t | xargs kill'"
+  },
+  "delay": "1500"
+}

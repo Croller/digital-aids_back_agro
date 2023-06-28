@@ -1,0 +1,33 @@
+{
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  },
+  "files": [
+    "src/types/global.d.ts",
+    "src/types/files.d.ts"
+  ],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "ESNext",
+    "module": "umd",
+    "lib": [
+      "ESNext",
+      "dom"
+    ],
+    "jsx": "react",
+    "noEmit": true,
+    "sourceMap": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "paths": {
+      "*": ["types/*.d.ts"],
+      "@*": ["src/*"]
+    },
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", ".vscode"],
+}
