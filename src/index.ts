@@ -12,6 +12,8 @@ import { createSocket } from '@api/services/socket'
 
 const app: Express = express()
 const http = new Server(app)
+const mode = process.env.NODE_ENV ?? ''
+const port = process.env.LOCAL_PORT ?? ''
 
 // for disable tls auth
 // process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
@@ -29,5 +31,5 @@ app.use('/', routes)
 http.listen(process.env.LOCAL_PORT)
 createSocket(http)
 
-console.log(`Env mode: ${process.env.NODE_ENV ?? ''}`)
-console.log(`Server listen on port: ${process.env.LOCAL_PORT ?? ''}`)
+console.log(`Env mode: ${mode}`)
+console.log(`Server port: ${port}`)

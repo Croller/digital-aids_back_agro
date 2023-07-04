@@ -1,4 +1,5 @@
 import { type TSignIn, type TUser } from '@api/types/user'
+import { type TWeather, type TOWCurrent, type TOWForecast } from './openweather'
 
 export type THeaders = {
   authorization?: string
@@ -12,27 +13,18 @@ export type TRequest = {
     remoteAddress?: string
   }
   body: {
-    user?: TUser
     signin?: TSignIn
-    data?: TUser
-    rule?: {
-      user_id: string
-      name: string
-    }
   }
   params?: {
-    id?: string
     table?: string
-    confirm?: string
-    x?: string
-    y?: string
-    z?: string
-    key?: string
   }
+  query?: TWeather
 }
 
 export type TResponse = {
   token?: string
   user?: TUser
   error?: TError | null
+  success?: boolean
+  weather?: TOWCurrent | TOWForecast
 }

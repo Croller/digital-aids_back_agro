@@ -3,7 +3,7 @@
   "version": "1.0.1",
   "description": "Agro Back",
   "scripts": {
-    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q src/index.ts\"",
+    "dev": "nodemon --watch src src/index.ts",
     "start": "ts-node src/index.ts",
     "lint": "eslint --fix --ext .ts ./src"
   },
