@@ -4,6 +4,7 @@ import { setError } from '@api/utils/error'
 import { db } from '@api/services/db'
 import { type TUser } from '@api/types/user'
 import { type TRequest } from '@api/types/http'
+import { type Response } from 'express'
 
 const signature = process.env.SERVER_AUTH_SECRET ?? ''
 const expiration = process.env.SERVER_AUTH_TIME ?? '0'
@@ -38,7 +39,7 @@ export const generateToken = (source: TUser): string => {
   return jwt.sign(source, signature, { expiresIn: expiration })
 }
 
-export const verifyToken = async (req: TRequest): Promise<TUser | null> => {
+export const verifyToken = async (req: TRequest, res: Response): Promise<TUser | null> => {
   const userToken: TUser | null = req.headers.authorization ? decodeToken(req.headers.authorization) : null
 
   if (!userToken) {
@@ -57,8 +58,9 @@ export const verifyToken = async (req: TRequest): Promise<TUser | null> => {
     const { id, login } = userToken
     const [user] = await db('auth.data_user').where({ id, login })
 
-    if (!user) {
-      setError('userNotFound', 'User not found')
+    if (!user || user.is_deleted) {
+      setError('userNotFound', 'User not found or is deleted')
+      res.status(201).json(setError('authError', 'Auth error'))
       return null
     }
 
