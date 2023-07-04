@@ -32,4 +32,5 @@ http.listen(process.env.LOCAL_PORT)
 createSocket(http)
 
 console.log(`Env mode: ${mode}`)
+console.log(`Env mode: ${mode}`)
 console.log(`Server port: ${port}`)
