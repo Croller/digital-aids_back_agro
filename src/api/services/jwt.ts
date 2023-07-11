@@ -40,33 +40,32 @@ export const generateToken = (source: TUser): string => {
 }
 
 export const verifyToken = async (req: TRequest, res: Response): Promise<TUser | null> => {
-  const userToken: TUser | null = req.headers.authorization ? decodeToken(req.headers.authorization) : null
+  const userDecode: TUser | null = req.headers.authorization ? decodeToken(req.headers.authorization) : null
 
-  if (!userToken) {
-    setError('tokenError', 'Token decode or not found error')
+  if (!userDecode) {
+    res.status(201).json(setError('authError', 'Token decode or not found error'))
     return null
   }
 
-  const isExpired = moment().diff(moment(userToken.enter_at, 'YYYY-MM-DDTHH:mm:ss.SSS'), 'seconds') > expireTime
+  const isExpired = moment().diff(moment(userDecode.enter_at, 'YYYY-MM-DDTHH:mm:ss.SSS'), 'seconds') > expireTime
 
   if (isExpired) {
-    setError('tokenIsExpired', 'Token is expired')
+    res.status(201).json(setError('authError', 'Token is expired'))
     return null
   }
 
   try {
-    const { id, login } = userToken
+    const { id, login } = userDecode
     const [user] = await db('auth.data_user').where({ id, login })
 
     if (!user || user.is_deleted) {
-      setError('userNotFound', 'User not found or is deleted')
-      res.status(201).json(setError('authError', 'Auth error'))
+      res.status(201).json(setError('authError', 'User not found'))
       return null
     }
 
     return user
   } catch (err: any) {
-    setError('queryError', 'Query error', JSON.stringify(err.message))
+    setError('authError', 'Query error', JSON.stringify(err.message))
     return null
   }
 }
