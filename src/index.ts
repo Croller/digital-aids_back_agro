@@ -18,6 +18,7 @@ const port = process.env.LOCAL_PORT ?? ''
 // process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
 
 app.disable('x-powered-by')
+app.disable('Server')
 app.use((_, res, next) => {
   res.set('Cache-Control', 'no-cache, no-store')
   res.set('Pragma', 'no-cache')
