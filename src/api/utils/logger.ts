@@ -16,11 +16,11 @@ export const logger = async (table: string, query: object, user: TUser): Promise
     const existTable = await isTable(table_name, table_schema)
 
     if (!existTable) return
-    const filtred = await db(table).where(query)
+    const [filtred] = await db(table).where(query)
 
-    if (filtred.length !== 1) return
+    if (filtred) return
     const data_db = {
-      ...filtred[0],
+      ...filtred,
       change_user: user.id,
       change_at: new Date().toISOString()
     }
