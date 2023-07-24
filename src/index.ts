@@ -1,21 +1,14 @@
-/* eslint-disable import/first */
+import 'dotenv/config.js'
 import { Server } from 'http'
-import { config } from 'dotenv'
 import express, { type Express } from 'express'
-
-config()
-
-// for read env before import another file
-import { routes } from '@api/router'
+import { routes, swagger } from '@api/router'
 import { createSocket } from '@api/services/socket'
 
 const app: Express = express()
 const http = new Server(app)
-const mode = process.env.NODE_ENV ?? ''
-const port = process.env.LOCAL_PORT ?? ''
-
-// for disable tls auth
-// process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
+const NODE_ENV = process.env.NODE_ENV ?? ''
+const APP = process.env.APP_NAME ?? ''
+const LOCAL_PORT = process.env.LOCAL_PORT ?? ''
 
 app.disable('x-powered-by')
 app.use((_, res, next) => {
@@ -31,10 +24,11 @@ app.use(express.json({ limit: '550mb' }))
 app.use(express.urlencoded({ extended: true }))
 app.use(express.static('src/static', { maxAge: 86400000 }))
 app.use('/static', express.static('src/static'))
-app.use('/', routes)
+app.use(`/api/${APP}`, routes)
+app.use(`/swagger/${APP}`, swagger)
 
 http.listen(process.env.LOCAL_PORT)
 createSocket(http)
 
-console.log(`Env mode: ${mode}`)
-console.log(`Server port: ${port}`)
+console.log(`Env mode: ${NODE_ENV}`)
+console.log(`Server port: ${LOCAL_PORT}`)

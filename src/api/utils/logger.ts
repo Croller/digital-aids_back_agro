@@ -1,14 +1,13 @@
 import { db } from '@api/services/db'
 import { setError } from './error'
-
-import { type TUser } from '@api/types/user'
+import { type TTokenUser } from '@api/types/user'
 
 const isTable = async (table_name: string, table_schema = 'public'): Promise<boolean> => {
   const results = await db('information_schema.tables').where({ table_schema, table_name }).returning('*')
   return results.length === 1
 }
 
-export const logger = async (table: string, query: object, user: TUser): Promise<void> => {
+export const logger = async (table: string, query: object, user: TTokenUser): Promise<void> => {
   try {
     if (!table.includes('data_')) return
     const logsTable = table.replace('data_', 'logs_')

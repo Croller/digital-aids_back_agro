@@ -2,9 +2,9 @@ import moment from 'moment'
 import jwt from 'jsonwebtoken'
 import { setError } from '@api/utils/error'
 import { db } from '@api/services/db'
-import { type TUser } from '@api/types/user'
 import { type TRequest } from '@api/types/http'
 import { type Response } from 'express'
+import { type TUser, type TTokenUser } from '@api/types/user'
 
 const signature = process.env.SERVER_AUTH_SECRET ?? ''
 const expiration = process.env.SERVER_AUTH_TIME ?? '0'
@@ -35,12 +35,12 @@ export const decodeToken = (source: string): any | null => {
   }
 }
 
-export const generateToken = (source: TUser): string => {
+export const generateToken = (source: TTokenUser): string => {
   return jwt.sign(source, signature, { expiresIn: expiration })
 }
 
 export const verifyToken = async (req: TRequest, res: Response): Promise<TUser | null> => {
-  const userDecode: TUser | null = req.headers.authorization ? decodeToken(req.headers.authorization) : null
+  const userDecode: TTokenUser | null = req.headers.authorization ? decodeToken(req.headers.authorization) : null
 
   if (!userDecode) {
     res.status(201).json(setError('authError', 'Token decode or not found error'))
@@ -56,9 +56,9 @@ export const verifyToken = async (req: TRequest, res: Response): Promise<TUser |
 
   try {
     const { id, login } = userDecode
-    const [user] = await db('auth.data_user').where({ id, login })
+    const [user] = await db('auth.data_user').where({ id, login, is_deleted: false })
 
-    if (!user || user.is_deleted) {
+    if (!user) {
       res.status(201).json(setError('authError', 'User not found'))
       return null
     }

@@ -27,4 +27,4 @@ const getDictionary = async (req: TRequest, res: Response): Promise<void> => {
   }
 }
 
-common_routes.get(`/api/${APP}/dictionary/:table`, getDictionary)
+common_routes.get('/dictionary/:table', getDictionary)

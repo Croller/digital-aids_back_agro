@@ -6,7 +6,6 @@ import { type TRequest } from '@api/types/http'
 
 export const openweather_routes = Router()
 
-const APP = process.env.APP_NAME ?? ''
 const API_URL = 'https://api.openweathermap.org/data/2.5'
 
 const current = async (req: TRequest, res: Response): Promise<void> => {
@@ -24,7 +23,7 @@ const current = async (req: TRequest, res: Response): Promise<void> => {
     const url = `${API_URL}/weather?lat=${x}&lon=${y}&units=${units ?? 'metric'}&lang=${lng}&appid=${apiKey}`
     const response = await fetch(url)
     const result = await response.json()
-    res.json(result)
+    res.json({ weather_current: result })
   } catch (err: any) {
     res.status(201).json(setError('queryError', 'Query error', JSON.stringify(err.message)))
   }
@@ -45,11 +44,11 @@ const forecast = async (req: TRequest, res: Response): Promise<void> => {
     const url = `${API_URL}/forecast?lat=${x}&lon=${y}&cnt=${cnt ?? 7}&units=${units ?? 'metric'}&lang=${lng}&appid=${apiKey}`
     const response = await fetch(url)
     const result = await response.json()
-    res.json(result)
+    res.json({ weather_forecast: result })
   } catch (err: any) {
     res.status(201).json(setError('queryError', 'Query error', JSON.stringify(err.message)))
   }
 }
 
-openweather_routes.get(`/api/${APP}/weather/current`, current)
-openweather_routes.get(`/api/${APP}/weather/forecast`, forecast)
+openweather_routes.get('/weather/current', current)
+openweather_routes.get('/weather/forecast', forecast)

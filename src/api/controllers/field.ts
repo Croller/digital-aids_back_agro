@@ -4,7 +4,7 @@ import { setError } from '@api/utils/error'
 import { logger } from '@api/utils/logger'
 import { type Response, Router } from 'express'
 import { type TRequest } from '@api/types/http'
-import { type TField } from '@api/types/field'
+import { type TGroupField, type TField } from '@api/types/field'
 
 export const field_routes = Router()
 
@@ -21,11 +21,11 @@ const create = async (req: TRequest, res: Response): Promise<void> => {
 
   try {
     const { group_field, fields } = req.body
-    const [group] = await db(`${APP}.data_group_field`).insert({
+    const [group]: TGroupField[] = await db(`${APP}.data_group_field`).insert({
       ...group_field,
       user_id: user.id
     }).returning('*')
-    let result = await Promise.allSettled(fields.map(async (field) => {
+    await Promise.allSettled(fields.map(async (field) => {
       const editedFiled = field.properties as TField
       delete editedFiled.DN
       const [fld] = await db(`${APP}.data_field`).insert({
@@ -35,7 +35,13 @@ const create = async (req: TRequest, res: Response): Promise<void> => {
       }).returning('*')
       return fld
     }))
-    result = result.map(r => r.status === 'fulfilled' && r.value).filter(f => f && f)
+    let result = await db.raw(
+      `SELECT jsonb_build_object('type', 'Feature',
+        'geometry',   ST_AsGeoJSON(geom)::jsonb,
+        'properties', to_jsonb(row) - 'geom'
+      ) FROM (SELECT * FROM ${APP}.data_field WHERE group_id='${group.id}') row;`
+    )
+    result = result.rows.map((item: { jsonb_build_object: object }) => item.jsonb_build_object)
 
     await logger(`${APP}.data_group_field`, { id: group.id }, user)
 
@@ -50,19 +56,21 @@ const select = async (req: TRequest, res: Response): Promise<void> => {
   if (!user) return
 
   try {
-    const group_field = await db(`${APP}.data_group_field`)
+    const group_fields = await db(`${APP}.data_group_field`).where({ user_id: user.id, is_deleted: false })
+    const groudIds = group_fields.map(g => g.id)
     let fields = await db.raw(
       `SELECT jsonb_build_object('type', 'Feature',
         'geometry',   ST_AsGeoJSON(geom)::jsonb,
         'properties', to_jsonb(row) - 'geom'
-      ) FROM (SELECT * FROM ${APP}.data_field) row;`
+      ) FROM (SELECT * FROM ${APP}.data_field WHERE group_id = any(:x1::uuid[]) AND is_deleted=:x2) row;`,
+      { x1: groudIds, x2: false }
     )
-    fields = fields.rows.map((item: any) => item.jsonb_build_object)
-    res.json({ group_field, fields })
+    fields = fields.rows.map((item: { jsonb_build_object: object }) => item.jsonb_build_object)
+    res.json({ group_fields, fields })
   } catch (err: any) {
     res.status(201).json(setError('queryError', 'Query error', JSON.stringify(err.message)))
   }
 }
 
-field_routes.put(`/api/${APP}/field/create`, create)
-field_routes.get(`/api/${APP}/field/select`, select)
+field_routes.put('/field/create', create)
+field_routes.get('/field/select', select)

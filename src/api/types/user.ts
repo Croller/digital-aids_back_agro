@@ -24,3 +24,9 @@ export type TRule = {
   name: string
   end_at: string
 }
+
+export type TTokenUser = {
+  id: string
+  login: string
+  enter_at: string
+}

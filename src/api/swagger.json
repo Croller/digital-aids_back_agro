@@ -1,0 +1,164 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Doc Api - AGRO",
+    "description": "Swagger",
+    "version": "1.0.0"
+  },
+  "host": "0.0.0.0:8086",
+  "basePath": "/api/agro/",
+  "schemes": [
+    "http"
+  ],
+  "securityDefinitions": {
+    "bearerAuth": {
+      "type": "apiKey",
+      "in": "header",
+      "name": "Authorization",
+      "scheme": "bearer"
+    }
+  },
+  "paths": {
+    "/auth": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          }
+        }
+      }
+    },
+    "/field/create": {
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "group_field": {
+                  "example": "any"
+                },
+                "fields": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          }
+        }
+      }
+    },
+    "/field/select": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/weather/current": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "y",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "units",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          }
+        }
+      }
+    },
+    "/weather/forecast": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "y",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "cnt",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "units",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          }
+        }
+      }
+    },
+    "/dictionary/{table}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "table",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ]
+}

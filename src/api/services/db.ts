@@ -3,13 +3,13 @@ import knexGisjs from 'knex-postgis'
 import { Client } from 'pg'
 
 const isDev = process.env.NODE_ENV === 'development'
-const port = process.env.HOST_DB_PORT ?? ''
+const PORT = process.env.HOST_DB_PORT ?? ''
 
 const CONFIG = {
   user: process.env.HOST_DB_LOGIN,
   password: process.env.HOST_DB_PASSWORD,
   host: process.env.HOST_DB_HOST,
-  port: Number(process.env.HOST_DB_PORT),
+  port: Number(PORT),
   database: process.env.HOST_DB_DATABASE,
   ssl: {
     rejectUnauthorized: false
@@ -17,8 +17,9 @@ const CONFIG = {
 }
 
 const pg = new Client(CONFIG)
+
 pg.connect()
-  .then(() => { console.log(isDev ? `DataBase port: ${port}` : 'DataBase: connected') })
+  .then(() => { console.log(isDev ? `DataBase listen on port: ${PORT}` : 'DataBase: connected') })
   .catch((err) => { console.log('DataBase connect error:', err.qmessage) })
 
 export const db = knexjs({
