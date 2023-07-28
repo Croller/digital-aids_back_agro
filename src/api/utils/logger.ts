@@ -17,7 +17,7 @@ export const logger = async (table: string, query: object, user: TTokenUser): Pr
     if (!existTable) return
     const [filtred] = await db(table).where(query)
 
-    if (filtred) return
+    if (!filtred) return
     const data_db = {
       ...filtred,
       change_user: user.id,
